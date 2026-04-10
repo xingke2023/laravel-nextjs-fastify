@@ -27,6 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('景区管理系统')
             ->login()
             ->colors([
                 'primary' => Color::Amber,

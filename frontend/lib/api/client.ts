@@ -1,7 +1,5 @@
 const LARAVEL_URL =
   process.env.NEXT_PUBLIC_LARAVEL_API_URL || 'http://localhost:8000/api';
-const NESTJS_URL =
-  process.env.NEXT_PUBLIC_NESTJS_API_URL || 'http://localhost:8068/api';
 const FASTIFY_URL =
   process.env.NEXT_PUBLIC_FASTIFY_API_URL || 'http://localhost:3200';
 
@@ -109,9 +107,6 @@ class ApiClient {
 
 // Laravel: auth, business logic
 export const laravelClient = new ApiClient(LARAVEL_URL);
-
-// NestJS: posts, high-concurrency, real-time features
-export const nestjsClient = new ApiClient(NESTJS_URL);
 
 // Fastify: high-performance services (iching, etc.)
 export const fastifyClient = new ApiClient(FASTIFY_URL);

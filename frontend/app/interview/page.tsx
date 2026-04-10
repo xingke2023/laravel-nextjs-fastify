@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { useAuth } from '@/lib/auth-context';
-import { nestjsClient } from '@/lib/api/client';
 
 declare global {
   interface Window {
@@ -13,14 +12,6 @@ declare global {
   }
 }
 
-interface SpeechKeyResponse {
-  key: string;
-  region: string;
-}
-
-interface GeminiResponse {
-  answer: string;
-}
 
 export default function InterviewPage() {
   const { isAuthenticated, loading } = useAuth();
@@ -125,83 +116,12 @@ function InterviewTool() {
   }, []);
 
   const startTranslation = useCallback(async () => {
-    if (!window.SpeechSDK) return;
-    setStatus({ text: 'Fetching config…', type: '' });
-
-    let key: string, region: string;
-    try {
-      const data = await nestjsClient.get<SpeechKeyResponse>('/speech-key');
-      key = data.key;
-      region = data.region;
-    } catch (e) {
-      setStatus({ text: 'Config error: ' + (e instanceof Error ? e.message : e), type: 'error' });
-      return;
-    }
-
-    try {
-      const { SpeechSDK } = window;
-      const speechConfig = SpeechSDK.SpeechTranslationConfig.fromSubscription(key, region);
-      speechConfig.speechRecognitionLanguage = 'en-US';
-      speechConfig.addTargetLanguage('zh-Hans');
-
-      const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
-      const recognizer = new SpeechSDK.TranslationRecognizer(speechConfig, audioConfig);
-      recognizerRef.current = recognizer;
-
-      recognizer.recognizing = (_s: unknown, e: { result: { text: string; translations: unknown } }) => {
-        setEnInterim(e.result.text || '');
-        setZhInterim(getZh(e.result.translations));
-      };
-
-      recognizer.recognized = (_s: unknown, e: { result: { reason: number; text: string; translations: unknown } }) => {
-        if (e.result.reason === SpeechSDK.ResultReason.TranslatedSpeech && e.result.text) {
-          const en = e.result.text;
-          const zh = getZh(e.result.translations);
-          setEnFinals(prev => [...prev.slice(-29), en]);
-          setZhFinals(prev => [...prev.slice(-29), zh]);
-          setEnInterim('');
-          setZhInterim('');
-        }
-      };
-
-      recognizer.canceled = (_s: unknown, e: { reason: number; errorDetails: string }) => {
-        const msg = e.reason === SpeechSDK.CancellationReason.Error
-          ? 'Error: ' + e.errorDetails : 'Cancelled';
-        setStatus({ text: msg, type: 'error' });
-        stopTranslation();
-      };
-
-      recognizer.sessionStopped = () => { stopTranslation(); };
-
-      recognizer.startContinuousRecognitionAsync(
-        () => {
-          setIsRunning(true);
-          setStatus({ text: 'Listening…', type: 'ready' });
-        },
-        (err: string) => {
-          setStatus({ text: 'Start failed: ' + err, type: 'error' });
-          recognizerRef.current = null;
-        }
-      );
-    } catch (e) {
-      setStatus({ text: 'Init failed: ' + (e instanceof Error ? e.message : e), type: 'error' });
-    }
-  }, [stopTranslation]);
+    setStatus({ text: 'Speech service not available', type: 'error' });
+  }, []);
 
   const handleAiAnswer = useCallback(async () => {
-    if (enFinals.length === 0) return;
-    const lastThree = enFinals.slice(-3).join(' ');
-    setAiLoading(true);
-    setAiAnswer('');
-    try {
-      const data = await nestjsClient.post<GeminiResponse>('/gemini', { text: lastThree });
-      setAiAnswer(data.answer || 'No response');
-    } catch (e) {
-      setAiAnswer('Request failed: ' + (e instanceof Error ? e.message : e));
-    } finally {
-      setAiLoading(false);
-    }
-  }, [enFinals]);
+    setAiAnswer('AI service not available');
+  }, []);
 
   const handleClear = () => {
     setEnFinals([]);

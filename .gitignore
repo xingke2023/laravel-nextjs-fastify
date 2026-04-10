@@ -15,9 +15,6 @@ backend/storage/framework/views/
 backend/bootstrap/cache/
 backend/db.sqlite
 
-# NestJS
-nestjs-backend/dist/
-
 # Next.js
 frontend/.next/
 frontend/out/

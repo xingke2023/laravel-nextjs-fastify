@@ -15,6 +15,10 @@ const PUBLIC_ROUTES = new Set([
   'POST:/image/generate',
   'GET:/scenic/spots',
   'GET:/scenic/sub-spots',
+  'GET:/scenic/polygon',
+  'GET:/scenic/detail',
+  'GET:/scenic/suggestion',
+  'GET:/scenic/admin-region',
 ])
 
 function isPublic(method, url) {

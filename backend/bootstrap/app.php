@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // 信任 Cloudflare 和 Nginx 代理，正确识别 HTTPS 和真实 IP
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'jwt.auth' => \App\Http\Middleware\JwtAuthMiddleware::class,
         ]);

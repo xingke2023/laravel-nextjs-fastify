@@ -39,4 +39,12 @@ return [
         'url' => env('AUTH_CENTER_URL', 'https://mo.xingke888.com/api'),
     ],
 
+    'baidu_map' => [
+        'ak' => env('BAIDU_MAP_AK', ''),
+    ],
+
+    'deepseek' => [
+        'api_key' => env('DEEPSEEK_API_KEY', ''),
+    ],
+
 ];
